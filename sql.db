@@ -1,0 +1,25 @@
+create table products (
+   id INT,
+   name VARCHAR(50),
+   price INT,
+   onsale boolean
+
+);
+
+create table restaurant (
+
+id INT,
+name VARCHAR(50),
+location VARCHAR(50),
+price_range INT
+);
+
+insert into restaurant (id,name,location,price_range) values(123,'mcdonald','new york',3);
+
+create table restaurants (
+
+id BIGSERIAL NOT NULL,
+name VARCHAR(50) NOT NULL,
+location VARCHAR(50) NOT NULL,
+price_range INT NOT NULL
+);
