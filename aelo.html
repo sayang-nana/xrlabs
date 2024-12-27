@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aloe Vera Model Viewer</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet"> <!-- Import DM Sans -->
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+            width: 100vw; 
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #cce4e4, #a3d8d8); /* Gradient background */
+        }
+        canvas { 
+            display: block; 
+            width: 100%; 
+            height: 100%;
+        }
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            z-index: 1000;
+        }
+        #infoWindow {
+            position: absolute;
+            background: white; /* White background */
+            color: darkblue; /* Dark blue text color */
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            pointer-events: auto; /* Allow mouse events */
+            transition: opacity 0.3s; /* Smooth transition */
+            max-width: 300px; /* Set a max width */
+            z-index: 1001; /* Ensure it appears above other elements */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Add shadow for depth */
+            font-family: 'DM Sans', sans-serif; /* Set font to DM Sans */
+        }
+        #closeButton {
+            position: absolute;
+            right: 10px;
+            top: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            color: darkblue; /* Dark blue color for close button */
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        #closeButton:hover {
+            opacity: 1; /* Change opacity on hover */
+        }
+        #infoTitle {
+            font-size: 18px; /* Larger font for title */
+            font-weight: bold; /* Bold title */
+            margin-bottom: 10px; /* Space below title */
+        }
+        #infoDescription {
+            font-size: 14px; /* Smaller font for description */
+            line-height: 1.5; /* Improve line spacing */
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Loading... <span id="progress">0%</span></div>
+    <div id="infoWindow">
+        <span id="closeButton">×</span>
+        <div id="infoTitle"></div>
+        <div id="infoDescription"></div>
+    </div>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.154.0/build/three.module.js",
+            "three/examples/jsm/loaders/GLTFLoader": "https://unpkg.com/three@0.154.0/examples/jsm/loaders/GLTFLoader.js",
+            "three/examples/jsm/controls/OrbitControls": "https://unpkg.com/three@0.154.0/examples/jsm/controls/OrbitControls.js"
+        }
+    }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+        import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
+        let scene, camera, renderer, controls, raycaster, mouse;
+        let hotspots = [];
+        let blinkingHotspots = []; // Array to hold blinking hotspots
+        const originalCameraPosition = new THREE.Vector3(-0.3448812670732787, 0.4012495514565061, 0.5344829114016636); // Store original camera position
+
+        function init() {
+            // Create scene
+            scene = new THREE.Scene();
+
+            // Set up camera to specified position
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.copy(originalCameraPosition); // Set initial camera position
+
+            // Set up renderer with background color
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0xcce4e4); // Set background color
+            document.body.appendChild(renderer.domElement);
+
+            // Add OrbitControls for free camera movement
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+            controls.dampingFactor = 0.25; // an animation loop is required when either damping or auto-rotation are enabled
+            controls.enableZoom = false; // Disable zooming through controls
+
+            // Add ambient light
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+
+            // Add directional light
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 10, 7.5);
+            scene.add(directionalLight);
+
+            // Load the new model
+            loadModel();
+
+            // Initialize raycaster and mouse
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize, false);
+            window.addEventListener('click', onMouseClick, false);
+
+            // Close button functionality
+            document.getElementById('closeButton').addEventListener('click', hideInfoWindow);
+
+            // Start animation loop
+            animate();
+        }
+
+        function loadModel() {
+            const loader = new GLTFLoader();
+            loader.load(
+                'model/aelovera.glb', // Path to your model
+                (gltf) => {
+                    const model = gltf.scene;
+                    model.scale.set(0.1, 0.1, 0.1); // Set initial scale to small
+                    scene.add(model);
+
+                    // Hide loading screen before starting the scaling animation
+                    document.getElementById('loading').style.display = 'none';
+
+                    // Animate the scaling to full size
+                    const duration = 1000; // Duration in milliseconds
+                    let startTime = null;
+
+                    function animateScale(time) {
+                        if (!startTime) startTime = time;
+                        const elapsed = time - startTime;
+
+                        // Calculate the scale factor based on elapsed time
+                        const scaleFactor = Math.min(elapsed / duration, 1); // Ensure it doesn't exceed 1
+                        model.scale.set(0.1 + (scaleFactor * 0.9), 0.1 + (scaleFactor * 0.9), 0.1 + (scaleFactor * 0.9)); // Scale from 0.1 to 1
+
+                        if (scaleFactor < 1) {
+                            requestAnimationFrame(animateScale); // Continue animating
+                        } else {
+                            createHotspots(); // Create hotspots after the model is fully loaded
+                        }
+                    }
+
+                    requestAnimationFrame(animateScale); // Start the scaling animation
+                },
+                (xhr) => {
+                    const percentComplete = (xhr.loaded / xhr.total) * 100;
+                    document.getElementById('progress').textContent = Math.round(percentComplete) + '%';
+                },
+                (error) => {
+                    console.error('An error happened while loading the model:', error);
+                }
+            );
+        }
+
+        function createHotspots() {
+            // Define hotspot positions and data
+            const hotspotData = [
+                { 
+                    position: new THREE.Vector3(-0.14, 0.06, 0.05), 
+                    title: "Leaf Surface (Outer Skin)", 
+                    description: "The leaf surface, or outer skin of Aloe vera, is the green protective layer that shields the inner gel. While primarily serving as a natural barrier, it is sometimes used in composting or as an organic fertilizer due to its nutrient content. The outer skin contains aloin, a compound found in the latex layer beneath, which possesses potential medicinal properties. However, direct application of aloin can cause irritation, so it must be used cautiously."
+                },
+                { position: new THREE.Vector3(0.05, 0.03, 0.26), title: "Leaf Gel (Inner Transparent Area)", description: "Description for Leaf Gel." },
+                { position: new THREE.Vector3(0, 0.2, 0.04), title: "Leaf Edge (Spiny Margins)", description: "Description for Leaf Edge." }
+            ];
+
+            hotspotData.forEach(data => {
+                const hotspotGeometry = new THREE.SphereGeometry(0.015, 32, 32); // Set size to 0.015
+                const hotspotMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 }); // Red color for hotspots
+                const hotspot = new THREE.Mesh(hotspotGeometry, hotspotMaterial);
+                hotspot.position.copy(data.position);
+                hotspot.userData = { title: data.title, description: data.description }; // Store title and description in userData
+                scene.add(hotspot);
+                hotspots.push(hotspot);
+                blinkingHotspots.push(hotspot); // Add to blinking array
+            });
+        }
+
+        function onMouseClick(event) {
+            // Calculate mouse position in normalized device coordinates
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            // Update the raycaster with the camera and mouse position
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(hotspots);
+
+            if (intersects.length > 0) {
+                const hotspot = intersects[0].object;
+                showInfoWindow(hotspot.userData.title, hotspot.userData.description, event.clientX, event.clientY);
+                zoomToHotspot(hotspot.position); // Call zoom function
+            } else {
+                hideInfoWindow();
+                returnToOriginalPosition(); // Return to original position if clicked outside
+            }
+        }
+
+        function zoomToHotspot(targetPosition) {
+            const duration = 1000; // Duration of the transition in milliseconds
+            const startPosition = camera.position.clone(); // Get the current camera position
+            const targetDistance = 0.5; // Adjusted distance to zoom in closer to the hotspot
+            const targetCameraPosition = targetPosition.clone().add(new THREE.Vector3(0, 0, targetDistance)); // Calculate target camera position
+
+            const startTime = performance.now(); // Get the start time
+
+            function animateZoom() {
+                const elapsed = performance.now() - startTime;
+                const t = Math.min(elapsed / duration, 1); // Normalize time to [0, 1]
+
+                // Interpolate camera position
+                camera.position.lerpVectors(startPosition, targetCameraPosition, t);
+
+                // Update camera look at the target position
+                camera.lookAt(targetPosition);
+
+                if (t < 1) {
+                    requestAnimationFrame(animateZoom); // Continue animating
+                }
+            }
+
+            requestAnimationFrame(animateZoom); // Start the zoom animation
+        }
+
+        function returnToOriginalPosition() {
+            const duration = 1000; // Duration of the transition in milliseconds
+            const startPosition = camera.position.clone(); // Get the current camera position
+            const startTime = performance.now(); // Get the start time
+
+            function animateReturn() {
+                const elapsed = performance.now() - startTime;
+                const t = Math.min(elapsed / duration, 1); // Normalize time to [0, 1]
+
+                // Interpolate camera position back to original
+                camera.position.lerpVectors(startPosition, originalCameraPosition, t);
+
+                // Update camera look at the original position
+                camera.lookAt(originalCameraPosition);
+
+                if (t < 1) {
+                    requestAnimationFrame(animateReturn); // Continue animating
+                }
+            }
+
+            requestAnimationFrame(animateReturn); // Start the return animation
+        }
+
+        function showInfoWindow(title, description, x, y) {
+            const infoWindow = document.getElementById('infoWindow');
+            const infoTitle = document.getElementById('infoTitle');
+            const infoDescription = document.getElementById('infoDescription');
+            infoTitle.textContent = title; // Set the title in the info window
+            infoDescription.textContent = description; // Set the description in the info window
+            infoWindow.style.display = 'block';
+            infoWindow.style.left = `${x + 10}px`; // Offset for better visibility
+            infoWindow.style.top = `${y + 10}px`;
+        }
+
+        function hideInfoWindow() {
+            const infoWindow = document.getElementById('infoWindow');
+            infoWindow.style.display = 'none';
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update(); // Update controls for free movement
+            blinkingAnimation(); // Call blinking animation
+            renderer.render(scene, camera);
+        }
+
+        function blinkingAnimation() {
+            blinkingHotspots.forEach(hotspot => {
+                // Create a blinking effect by changing the opacity
+                const time = Date.now() * 0.002; // Control the speed of blinking
+                const opacity = (Math.sin(time) + 1) / 2; // Calculate opacity between 0 and 1
+                hotspot.material.opacity = opacity; // Set the material opacity
+                hotspot.material.transparent = true; // Ensure transparency is enabled
+            });
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        init();
+    </script>
+</body>
+</html>
