@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite + React</title>
+  </head>
+  <body>
+    
+    <!-- Google Fonts Link for Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+    
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.154.0/build/three.module.js",
+            "three/examples/jsm/loaders/GLTFLoader": "https://unpkg.com/three@0.154.0/examples/jsm/loaders/GLTFLoader.js",
+            "three/examples/jsm/controls/OrbitControls": "https://unpkg.com/three@0.154.0/examples/jsm/controls/OrbitControls.js"
+        }
+    }
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><img src="globe-icon.png" alt="Globe Icon"></li>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Courses</a></li>
+                <li><a href="#">About us</a></li>
+                <li><input type="search" placeholder="Search"></li>
+            </ul>
+        </nav>
+        <div class="hero-section">
+            <h1>Visualize & Learn</h1>
+            <p>Education is the kindling of a flame, not the filling of a vessel. -Socrates</p>
+            <button id="get-started-button" style="background-color: yellow;">Get Started</button>
+        </div>
+    </header>
+
+    <section class="future-section">
+        <h2>Step in the Future</h2>
+        <div id="astronaut-container"></div>
+        <div class="future-content">
+            <p>Experience immersive and interactive learning anytime, anywhere—on laptops, tablets, and smartphones.</p>
+        </div>
+    </section>
+
+    <section class="courses-section">
+        <h3>Courses Available</h3>
+        <div class="courses">
+            <div class="course-card">
+                <a href="flora.html" target="_blank" style="text-decoration: none; color: inherit;">
+                    <div class="card-content">
+                        <img src="path/to/your/flora-image.jpg" alt="Flora Image" style="width: 100%;">
+                        <h3>Flora</h3>
+                        <p>Explore the beauty of flora.</p>
+                    </div>
+                </a>
+            </div>
+            <div class="course-card">
+                <img src="astronomy.jpg" alt="Astronomy Course">
+                <p>Astronomy</p>
+                <span>Planetary Exploration</span>
+            </div>
+            <div class="course-card">
+                <img src="human-body.jpg" alt="Human Body Course">
+                <p>Human Body</p>
+                <span>Planetary Exploration</span>
+            </div>
+        </div>
+        <p>More to come...</p>
+    </section>
+
+    <footer>
+        <section class="about-us">
+            <div class="about-text">
+                <h3>About us</h3>
+                <p>We are Third Year Students pursuing Bachelors in Computer Application (BCA). This is a Web-Based Gamified Learning System using WebXR and Web 3D.</p>
+            </div>
+            <div class="social-links">
+                <a href="#"><img src="facebook-icon.png" alt="Facebook"></a>
+                <a href="#"><img src="instagram-icon.png" alt="Instagram"></a>
+            </div>
+        </section>
+        <p>&copy; 2024, All Rights Reserved</p>
+    </footer>
+    
+    <script type="module">
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+
+        let scene, camera, renderer, astronaut, mixer, clock;
+
+        function init() {
+            scene = new THREE.Scene();
+            
+            const container = document.getElementById('astronaut-container');
+            const aspect = container.clientWidth / container.clientHeight;
+            camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 1000);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setClearColor(0x000000, 0);
+            container.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+
+            camera.position.set(0, 1, 5);
+
+            clock = new THREE.Clock();
+
+            loadModel();
+            animate();
+        }
+
+        function loadModel() {
+            const loader = new GLTFLoader();
+            loader.load('model/ASTRO.glb', 
+                (gltf) => {
+                    console.log('Model loaded successfully');
+                    astronaut = gltf.scene;
+
+                    // Center the model
+                    const box = new THREE.Box3().setFromObject(astronaut);
+                    const center = box.getCenter(new THREE.Vector3());
+                    const size = box.getSize(new THREE.Vector3());
+
+                    // Log the bounding box dimensions
+                    console.log('Bounding Box Size:', size);
+                    console.log('Bounding Box Center:', center);
+
+                    // Scale the model to fit the scene
+                    const scale = 0.5; // Keep the scale at 0.5
+                    astronaut.scale.setScalar(scale);
+
+                    // Set the model's position using the coordinates you provided
+                    astronaut.position.set(0, -0.8650170822080795, -0.9);
+
+                    scene.add(astronaut);
+                    console.log('Astronaut added to scene');
+
+                    // Adjust camera to fit the model
+                    const fov = camera.fov * (Math.PI / 180);
+                    const heightToFit = size.y * scale;
+                    const distance = heightToFit / (2 * Math.tan(fov / 2));
+                    camera.position.set(0, 0, distance * 1.5);
+                    camera.lookAt(0, 0, 0);
+                    console.log('Camera adjusted to fit model');
+
+                    if (gltf.animations && gltf.animations.length) {
+                        mixer = new THREE.AnimationMixer(astronaut);
+                        const action = mixer.clipAction(gltf.animations[0]);
+                        action.play();
+                    }
+
+                    // Remove the slider event listeners and logPosition function
+                }, 
+                (xhr) => {
+                    console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+                },
+                (error) => {
+                    console.error('An error happened while loading the model:', error);
+                }
+            );
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (mixer) {
+                const delta = clock.getDelta();
+                mixer.update(delta);
+            }
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            const container = document.getElementById('astronaut-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        window.addEventListener('resize', onWindowResize, false);
+
+        // Add event listener for the "Get Started" button
+        document.getElementById('get-started-button').addEventListener('click', () => {
+            alert('Hi');
+        });
+
+        init();
+    </script>
+  </body>
+</html>
