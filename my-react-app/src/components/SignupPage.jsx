@@ -41,41 +41,27 @@ const SignupPage = () => {
 
         {/* Right Section */}
         <div className="flex flex-col w-full md:w-1/2 p-6 md:p-12">
+        <Link to="/"><img src="/src/assets/homeIcon.svg" alt="Home" className="inline-block h-4 w-4 mr-0" /></Link>
           <div className="form-header">
          <Link to="/login" className="login-link">Log in</Link>
           </div>
           <h1 className="text-2xl font-semibold mt-4" id='text'>Create an Account</h1>
-
-          {/* Radio Buttons Section */}
-          <div class="mt-4">
-          <span class="block mb-2 text-base font-medium text-gray-600">Register as:</span>
-         <div class="flex space-x-4">
-      <label class="radio-container">
-       <input type="radio" name="userType" value="learner" class="hidden-radio" />
-      <span class="radio-content">
-        <span class="radio-circle"></span>
-        Learner
-      </span>
-    </label>
-    <label class="radio-container">
-      <input type="radio" name="userType" value="contentCreator" class="hidden-radio" />
-      <span class="radio-content">
-        <span class="radio-circle"></span>
-        Content Creator
-      </span>
-          </label>
-       </div>
-       </div>
-
           <form className="mt-6 space-y-4">
             <div className="flex space-x-4">
-              <input className="input-field" type="text" placeholder="First name" required />
-              <input className="input-field" type="text" placeholder="Last name" required />
+              <input className="input-field border-2 border-black shadow-[inset_-4px_-4px_8px_rgba(255,255,255,0.7),inset_4px_4px_8px_rgba(0,0,0,0.2)] hover:shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.7),inset_6px_6px_12px_rgba(0,0,0,0.3)]" type="text" placeholder="First name" required />
+              <input className="input-field border-2 border-black shadow-[inset_-4px_-4px_8px_rgba(255,255,255,0.7),inset_4px_4px_8px_rgba(0,0,0,0.2)] hover:shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.7),inset_6px_6px_12px_rgba(0,0,0,0.3)]" type="text" placeholder="Last name" required />
             </div>
-            <input className="input-field" type="email" placeholder="Email" required />
+            <input className="input-field border-2 border-black shadow-[inset_-4px_-4px_8px_rgba(255,255,255,0.7),inset_4px_4px_8px_rgba(0,0,0,0.2)] hover:shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.7),inset_6px_6px_12px_rgba(0,0,0,0.3)]" type="email" placeholder="Email" required />
+            <div className="relative">
+              <select className="input-field border-2 border-black shadow-[inset_-4px_-4px_8px_rgba(255,255,255,0.7),inset_4px_4px_8px_rgba(0,0,0,0.2)] hover:shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.7),inset_6px_6px_12px_rgba(0,0,0,0.3)]" required>
+                <option value="" disabled selected>Select Role</option>
+                <option value="learner">Learner</option>
+                <option value="content-creator">Content Creator</option>
+              </select>
+            </div>
             <div className="relative">
               <input
-                className="input-field"
+                className={`input-field border-2 border-black shadow-[inset_-4px_-4px_8px_rgba(255,255,255,0.7),inset_4px_4px_8px_rgba(0,0,0,0.2)] hover:shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.7),inset_6px_6px_12px_rgba(0,0,0,0.3)] ${!passwordsMatch ? 'border-red-500' : ''}`}
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 required
@@ -94,7 +80,7 @@ const SignupPage = () => {
             </div>
             <div className="relative">
               <input
-                className={`input-field ${!passwordsMatch ? 'border-red-500' : ''}`}
+                className={`input-field border-2 border-black shadow-[inset_-4px_-4px_8px_rgba(255,255,255,0.7),inset_4px_4px_8px_rgba(0,0,0,0.2)] hover:shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.7),inset_6px_6px_12px_rgba(0,0,0,0.3)] ${!passwordsMatch ? 'border-red-500' : ''}`}
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm Password"
                 required
@@ -115,7 +101,9 @@ const SignupPage = () => {
             <label className="flex items-center">
               <input type="checkbox" className="mr-2" /> Remember me
             </label>
-            <button type="submit" className="create-account-button">Create account</button>
+            <button type="submit" className="create-account-button border-2 border-black">
+              Create account
+            </button>
           </form>
           <div className="divider">
             <span>or continue with</span>

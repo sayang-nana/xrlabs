@@ -22,16 +22,17 @@ const LoginPage = () => {
 
         {/* Right Section */}
         <div className="flex flex-col w-full md:w-1/2 p-6 md:p-12">
-          <div className="form-header">
-          <Link to="/signup" className="signup-link">Sign up</Link>
+        <Link to="/"><img src="/src/assets/homeIcon.svg" alt="Home" className="inline-block h-4 w-4 mr-0" /></Link>
+          <div className="form-header">    
+            <Link to="/signup" className="signup-link">Sign up</Link>
           </div>
           <h1 className="text-2xl font-semibold mt-4" id="text">Welcome back!</h1>
           <p className="text-gray-500" id="text-1">Please enter your details</p>
           <form className="mt-6 space-y-4">
-            <input className="input-field" type="email" placeholder="Email" required />
+            <input className="input-field border-2 border-black shadow-[inset_-4px_-4px_8px_rgba(255,255,255,0.7),inset_4px_4px_8px_rgba(0,0,0,0.2)] hover:shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.7),inset_6px_6px_12px_rgba(0,0,0,0.3)]" type="email" placeholder="Email" required />
             <div className="relative">
               <input
-                className="input-field"
+                className="input-field border-2 border-black shadow-[inset_-4px_-4px_8px_rgba(255,255,255,0.7),inset_4px_4px_8px_rgba(0,0,0,0.2)] hover:shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.7),inset_6px_6px_12px_rgba(0,0,0,0.3)]"
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 required

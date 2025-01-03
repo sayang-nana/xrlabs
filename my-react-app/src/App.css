@@ -13,7 +13,7 @@ html {
 }
 
 body {
-  background-color: rgb(255, 252, 93); /* Set to white or any desired color */
+  background-color: white; /* Set to white or any desired color */
   font-family: 'Abereto', sans-serif; /* Fallback to sans-serif if Abereto is not available */
 }
 
@@ -241,65 +241,4 @@ body {
     border-radius: 0.25rem;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     z-index: 50; /* Ensure it appears above other elements */
-}
-
-.hidden-radio {
-  display: none;
-}
-
-/* Styling for the label container */
-.radio-container {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid transparent; /* Add border for hover */
-  border-radius: 25px; /* To match the rounded container */
-  padding: 2px; /* Padding to create spacing around the radio content */
-}
-
-/* Hover state for the container */
-.radio-container:hover {
-    background-color: #b7d1ed;
-    border-color: #1683f7; /* Same dark blue as border hover */
-}
-
-/* Styling for the radio button container */
-.radio-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 16px;
-  border: 1px solid black;
-  border-radius: 25px;
-  background-color: #f8f8f8;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-/* Small circle for the radio button */
-.radio-circle {
-  width: 12px;
-  height: 12px;
-  border: 2px solid black;
-  border-radius: 50%;
-  margin-right: 8px;
-  background-color: white;
-  transition: background-color 0.3s ease;
-}
-
-/* Hover state with blue effect */
-.radio-content:hover {
-  border-color: #1683f7;
-  border: 1px;
-}
-
-/* Active state for the radio button */
-.hidden-radio:checked + .radio-content {
-  border-color: black;
-}
-
-.hidden-radio:checked + .radio-content .radio-circle {
-  background-color: black;
 }
