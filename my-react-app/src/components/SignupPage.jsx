@@ -1,23 +1,17 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import FormInput from "./FormInput";
 import Button from "./Button";
 import '../App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
-const SignupPage = ({ switchToLogin }) => {
+const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordsMatch, setPasswordsMatch] = useState(true);
-
-
-
-  //state declarations here for insert 
-const [firstName, setFirstName] = useState('');
-const [lastName, setLastName] = useState('');
-const [email, setEmail] = useState('');
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -35,45 +29,8 @@ const [email, setEmail] = useState('');
   const handleConfirmPasswordChange = (e) => {
     setConfirmPassword(e.target.value);
     setPasswordsMatch(password === e.target.value);
-  };
-  
+  };  
 
-
-  //backend/////////
-  const onSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
-    try {
-      const body = {
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        password,
-      };
-  
-      const response = await fetch("http://localhost:5000/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-  
-      const result = await response.json();
-      console.log("User added:", result);
-  
-      // Clear form fields after successful submission
-      setFirstName('');
-      setLastName('');
-      setEmail('');
-      setPassword('');
-      setConfirmPassword(''); // Reset confirm password as well
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-  
-  
-  
-    //over////////
-  
   return (
     <div className="login-container">
       <div className="bg-white shadow-xl rounded-lg w-full max-w-4xl flex overflow-hidden">
@@ -85,26 +42,15 @@ const [email, setEmail] = useState('');
         {/* Right Section */}
         <div className="flex flex-col w-full md:w-1/2 p-6 md:p-12">
           <div className="form-header">
-            <span className="signup-link active">Sign up</span> | <span className="login-link" onClick={switchToLogin}>Log in</span>
+         <Link to="/login" className="login-link">Log in</Link>
           </div>
           <h1 className="text-2xl font-semibold mt-4" id='text'>Create an Account</h1>
-
-             {/* form changes to do */}
-          <form className="mt-6 space-y-4" onSubmit={onSubmit}> 
+          <form className="mt-6 space-y-4">
             <div className="flex space-x-4">
-              <input className="input-field" type="text" placeholder="First name" required  value={firstName} // Bind to state
-  onChange={(e) => setFirstName(e.target.value)} />
-
-
-              <input className="input-field" type="text" placeholder="Last name" required  value={lastName} // Bind to state
-  onChange={(e) => setLastName(e.target.value)}  />
-
-
+              <input className="input-field" type="text" placeholder="First name" required />
+              <input className="input-field" type="text" placeholder="Last name" required />
             </div>
-            <input className="input-field" type="email" placeholder="Email" required  value={email} // Bind to state
-  onChange={(e) => setEmail(e.target.value)}e />  {/* // Update state on chang */}
-
-
+            <input className="input-field" type="email" placeholder="Email" required />
             <div className="relative">
               <input
                 className="input-field"
@@ -113,7 +59,7 @@ const [email, setEmail] = useState('');
                 required
                 value={password}
                 onChange={handlePasswordChange}
-               />
+              />
               <span
                 className="absolute right-3 top-3 cursor-pointer text-gray-500"
                 onClick={togglePasswordVisibility}

@@ -77,7 +77,7 @@ export default function LandingPage() {
             </button>
             <button
               className="text-black transform transition-transform duration-300 hover:scale-110 rounded-full border-2 border-black px-8 py-3"
-              onClick={() => navigate("/LoginPage")}
+              onClick={() => navigate("/login")}
             >
               Login
             </button>
