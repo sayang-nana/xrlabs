@@ -15,8 +15,7 @@ const LoginPage = () => {
     <div className="login-container">
       <div className="bg-white shadow-xl rounded-lg w-full max-w-4xl flex overflow-hidden">
         {/* Left Section */}
-         {/* Left Section */}
-         {/* Left Section */}
+      
         <div className="hidden md:flex items-center justify-center bg-gray-100 w-1/2">
           <img src="/src/assets/MINI.svg" alt="Illustration" className="w-3/4" />
         </div>
