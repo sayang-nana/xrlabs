@@ -45,6 +45,28 @@ const SignupPage = () => {
          <Link to="/login" className="login-link">Log in</Link>
           </div>
           <h1 className="text-2xl font-semibold mt-4" id='text'>Create an Account</h1>
+
+          {/* Radio Buttons Section */}
+          <div class="mt-4">
+          <span class="block mb-2 text-base font-medium text-gray-600">Register as:</span>
+         <div class="flex space-x-4">
+      <label class="radio-container">
+       <input type="radio" name="userType" value="learner" class="hidden-radio" />
+      <span class="radio-content">
+        <span class="radio-circle"></span>
+        Learner
+      </span>
+    </label>
+    <label class="radio-container">
+      <input type="radio" name="userType" value="contentCreator" class="hidden-radio" />
+      <span class="radio-content">
+        <span class="radio-circle"></span>
+        Content Creator
+      </span>
+          </label>
+       </div>
+       </div>
+
           <form className="mt-6 space-y-4">
             <div className="flex space-x-4">
               <input className="input-field" type="text" placeholder="First name" required />
