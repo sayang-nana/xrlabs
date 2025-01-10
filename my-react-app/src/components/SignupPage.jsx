@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import FormInput from "./FormInput";
 import Button from "./Button";
 import '../App.css';
@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const SignupPage = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [password, setPassword] = useState('');
@@ -29,10 +30,15 @@ const SignupPage = () => {
   const handleConfirmPasswordChange = (e) => {
     setConfirmPassword(e.target.value);
     setPasswordsMatch(password === e.target.value);
-  };  
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    navigate('/login');
+  };
 
   return (
-    <div className="login-container">
+    <div className="login-container bg-white">
       <div className="bg-white shadow-xl rounded-lg w-full max-w-4xl flex overflow-hidden">
         {/* Left Section */}
         <div className="hidden md:flex items-center justify-center bg-gray-100 w-1/2">
@@ -45,8 +51,8 @@ const SignupPage = () => {
           <div className="form-header">
          <Link to="/login" className="login-link">Log in</Link>
           </div>
-          <h1 className="text-2xl font-semibold mt-4" id='text'>Create an Account</h1>
-          <form className="mt-6 space-y-4">
+          <h1 className="text-2xl font-semibold mt-4 text-black" id='text'>Create an Account</h1>
+          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
             <div className="flex space-x-4">
               <input className="input-field border-2 border-black shadow-[inset_-4px_-4px_8px_rgba(255,255,255,0.7),inset_4px_4px_8px_rgba(0,0,0,0.2)] hover:shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.7),inset_6px_6px_12px_rgba(0,0,0,0.3)]" type="text" placeholder="First name" required />
               <input className="input-field border-2 border-black shadow-[inset_-4px_-4px_8px_rgba(255,255,255,0.7),inset_4px_4px_8px_rgba(0,0,0,0.2)] hover:shadow-[inset_-6px_-6px_12px_rgba(255,255,255,0.7),inset_6px_6px_12px_rgba(0,0,0,0.3)]" type="text" placeholder="Last name" required />
@@ -101,14 +107,14 @@ const SignupPage = () => {
             <label className="flex items-center">
               <input type="checkbox" className="mr-2" /> Remember me
             </label>
-            <button type="submit" className="create-account-button border-2 border-black">
+            <button type="submit" className="create-account-button bg-yellow-500 text-white border-2 border-black border-black">
               Create account
             </button>
           </form>
-          <div className="divider">
+          {/* <div className="divider">
             <span>or continue with</span>
-          </div>
-          <div className="flex justify-center space-x-4 mt-2">
+          </div> */}
+          {/* <div className="flex justify-center space-x-4 mt-2">
             <button className="social-button">
               <img src="/src/assets/google-logo.svg" alt="Google" className="h-5 w-5 mr-2" />
               Google
@@ -117,7 +123,7 @@ const SignupPage = () => {
             <img src="/src/assets/Apple_logo_black.svg" alt="Apple" className="h-5 w-5 mr-2" />
               Apple
               </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

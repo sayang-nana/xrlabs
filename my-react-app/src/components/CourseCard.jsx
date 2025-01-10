@@ -5,7 +5,9 @@ export default function CourseCard({ title = "Flora", status, image, iconSrc, sh
     const navigate = useNavigate();
 
     const handleCardClick = () => {
-        navigate("/plants");
+        if (title === "FLORA") {
+            navigate("/plants");
+        }
     };
 
     return (

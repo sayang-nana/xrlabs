@@ -5,8 +5,9 @@ import LoginPage from './components/LoginPage';
 import SignupPage from './components/SignupPage';
 import { Plants } from './components/Plants';
 import { CoursePage } from './components/CoursePage';
-
-
+import { ContentCreatorDashboard } from './components/ContentCreatorDashboard';
+import { LearnerDashboard } from './components/LearnerDashboard';
+import { QuizPage } from './components/QuizPage';
 
 function App() {
   return (
@@ -15,13 +16,13 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
-
-        {/* Signup page route */}
-        <Route path="/signup" element={<SignupPage />} />
+          <Route path="/content-creator-dashboard" element={<ContentCreatorDashboard />} />
+          <Route path="/learner-dashboard" element={<LearnerDashboard />} />
+          <Route path="/signup" element={<SignupPage />} />
           <Route path="/plants" element={<Plants />} />
           <Route path="/coursepage" element={<CoursePage />} />
+          <Route path="/quizpage" element={<QuizPage />} />
         </Routes>
-        
       </div>
     </Router>
   );
